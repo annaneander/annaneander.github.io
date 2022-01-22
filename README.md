@@ -1,1 +1,3 @@
-# ivis_one
+This [parallel coordinates](http://en.wikipedia.org/wiki/Parallel_coordinates) visualization of cars from the ‘70s and ‘80s demonstrates one of [D3 2.5.0](http://mbostock.github.com/d3/)’s new interactive features: the *brush* component. By clicking and dragging along any axis, you can specify a filter for that dimension. The brush component is also used in the updated [scatterplot matrix](http://mbostock.github.com/d3/ex/splom.html) example.
+
+**Update**: Jason Davies has derived an example with [reorderable axes](http://bl.ocks.org/1341281)!

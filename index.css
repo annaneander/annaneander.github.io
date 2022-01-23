@@ -1,0 +1,11 @@
+.foreground path {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 7px;
+  }
+
+.brush .selection {
+    fill-opacity: .3;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+}

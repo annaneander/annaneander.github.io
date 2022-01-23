@@ -13,42 +13,6 @@ var div = d3.select("body").append("div")
     .attr("class", "tooltip")				
     .style("opacity", 0);
 
-var randomColor = (function(){
-  var golden_ratio_conjugate = 0.618033988749895;
-  var h = Math.random();
-
-  var hslToRgb = function (h, s, l){
-      var r, g, b;
-
-      if(s == 0){
-          r = g = b = l; // achromatic
-      }else{
-          function hue2rgb(p, q, t){
-              if(t < 0) t += 1;
-              if(t > 1) t -= 1;
-              if(t < 1/6) return p + (q - p) * 6 * t;
-              if(t < 1/2) return q;
-              if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-              return p;
-          }
-
-          var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-          var p = 2 * l - q;
-          r = hue2rgb(p, q, h + 1/3);
-          g = hue2rgb(p, q, h);
-          b = hue2rgb(p, q, h - 1/3);
-      }
-
-      return '#'+Math.round(r * 255).toString(16)+Math.round(g * 255).toString(16)+Math.round(b * 255).toString(16);
-  };
-  
-  return function(){
-    h += golden_ratio_conjugate;
-    h %= 1;
-    return hslToRgb(h, 0.5, 0.60);
-  };
-})();
-
     
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
@@ -101,9 +65,9 @@ d3.csv("new_data.csv", function(data) {
   // Color scale: give me a specie name, I return a color
   //TODO: not all mixed majors are added + mixed majors are not filtered
   // //just random colors for now
-  // let color = d3.scaleOrdinal()
-  //   .domain(["Media Technology", "Computer Science", "Human-Computer Interaction", "Computer Engineering", "Finance" ])
-  //   .range([ "#440154ff", "#21908dff", "#fde725ff","#21908000","#ddd08dff" ])
+  let color = d3.scaleOrdinal()
+    .domain(["Media Technology", "Computer Science", "Human-Computer Interaction", "Computer Engineering", "Finance" ])
+    .range([ "#440154ff", "#21908dff", "#fde725ff","#21908000","#ddd08dff" ])
 
 
 
@@ -154,11 +118,11 @@ d3.csv("new_data.csv", function(data) {
     .data(data)
     .enter().append("path")
     .attr("d", path)
-    .style("stroke", randomColor)
     .style("opacity", "0.2")
     .on("mouseover", function(d) {	
         if (highlighted==null){
           d3.select(this).attr("d", path).style("stroke-width", "9px").style("opacity", "0.8")
+          .style("color", color)
         }
         // div.transition()		
         //   .duration(200)		

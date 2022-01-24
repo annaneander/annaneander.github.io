@@ -275,3 +275,42 @@ function brush() {
       });
 
     }}
+
+
+// simple data table
+function data_table(sample) {
+  // sort by first column
+  var sample = sample.sort(function(a,b) {
+    var col = d3.keys(a)[0];
+    return a[col] < b[col] ? -1 : 1;
+  });
+
+
+  var table = d3.select("#food-list")
+    .html("")
+    .selectAll(".row")
+      .data(sample)
+    .enter().append("div")
+      .on("mouseover", highlight)
+      .on("mouseout", unhighlight)
+      .on("click", expectations)
+      ;
+
+  table
+    .append("span")
+      .attr("class", "color-block")
+      .style("background", function(d) { return color(d.Major,0.85) })
+table
+    .append("span")
+      .text(function(d) { return d.Alias; })
+}
+  
+
+function expectations(d) {
+  var span = d3.select("#expectations")
+  span.select("span").remove();
+  span
+    .append("span")
+    .text(d.Expectations)
+  console.log(d.Expectations)
+}

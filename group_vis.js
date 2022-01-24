@@ -120,16 +120,6 @@ d3.csv("new_data.csv", function(data) {
   //     .style("opacity", "1")
   // }
 
-
-
-  // Add grey background lines for context.
-    background = svg.append("g")
-    .attr("class", "background")
-  .selectAll("myPath")
-    .data(data)
-  .enter().append("path")
-    .attr("d", path);
-
   // Add blue foreground lines for focus.
   foreground = svg.append("g")
     .attr("class", "foreground")
@@ -146,23 +136,23 @@ d3.csv("new_data.csv", function(data) {
           d3.select(this).attr("d", path).style("stroke-width", "9px").style("opacity", "0.8")
           .style("stroke", function(d){ return( color(d.Major))} )
         }
-        // div.transition()		
-        //   .duration(200)		
-        //   .style("opacity", .9);		
-        // div.html(d.name + "<br/>"  + d.major + "</br>" + d.degree)	
-        //   .style("left", (d3.event.pageX) + "px")		
-        //   .style("top", (d3.event.pageY - 28) + "px");	
+        div.transition()		
+          .duration(200)		
+          .style("opacity", .9);		
+        div.html(d.Alias + "<br/>"  + d.Major)	
+          .style("left", (d3.event.pageX) + "px")		
+          .style("top", (d3.event.pageY - 28) + "px");	
   })					
     .on("mouseout", function(d) {	
         if (highlighted==null){
-          d3.select(this).attr("d", path).style("stroke-width", "5px")
+          d3.select(this).attr("d", path).style("stroke-width", "3px")
           .style("opacity", "0.2")	
           .style("stroke", function(d){ return( color(d.Major))})
           // .style("stroke", "lightgrey")
         }
-        // div.transition()		
-        //   .duration(500)		
-        //   .style("opacity", 50);	
+        div.transition()		
+          .duration(500)		
+          .style("opacity", 0);	
     })
     .on("click", highlight);
 
@@ -219,7 +209,7 @@ d3.csv("new_data.csv", function(data) {
     
     
     function lowlight() {
-      highlighted.style("stroke-width", "5px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.2");
+      highlighted.style("stroke-width", "3px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.2");
       highlighted=null;
       // d3.select("body").selectAll("h2").style("display", "none");
       // d3.select("body").selectAll("p.interests")

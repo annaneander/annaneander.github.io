@@ -1,11 +1,19 @@
+.background path {
+    fill: none;
+    stroke: #ddd;
+    stroke-width: 5px;
+    stroke-opacity: 0.3;
+    shape-rendering: crispEdges;
+  }
+
 .foreground path {
     fill: none;
-    stroke: rgb(194, 194, 194);
-    stroke-width: 7px;
+    /* stroke: rgb(194, 194, 194); */
+    stroke-width: 5px;
   }
 
 .brush .selection {
     fill-opacity: .3;
-    stroke: #fff;
+    stroke: rgb(44, 44, 44);
     shape-rendering: crispEdges;
 }

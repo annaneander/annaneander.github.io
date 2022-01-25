@@ -20,7 +20,7 @@ div.tooltip {
 .foreground path {
     fill: none;
     /* stroke: rgb(194, 194, 194); */
-    stroke-width: 3px;
+    stroke-width: 4px;
   }
 
 .brush .selection {

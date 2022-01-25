@@ -1,6 +1,12 @@
-// set the dimensions and margins of the graph
-//TODO: sort out left margin of graph
-let margin = {top: 40, right: 60, bottom: 10, left: 90},
+// Code from d3-graph-gallery.com
+
+// set dimensions and margins of the graph
+//TODO: sort out sizes according to viewport
+let margin = {
+  top: 40, 
+  right: 60, 
+  bottom: 10, 
+  left: 90},
   width = 1400 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
@@ -9,6 +15,45 @@ let margin = {top: 40, right: 60, bottom: 10, left: 90},
 var lines;
 var dimensions;
 var highlighted = null; 
+
+  // Color scale
+  /*
+  8 majors, 8 colors. Red, blue and yellow. Avoid green for color blindness. TODO predefine colors as a list/dict.
+  */
+  //TODO: mixed majors are added + mixed majors are not filtered
+  const color = d3.scaleOrdinal()
+  .domain([
+    "Media Technology",
+    "Computer Science",
+    "Computer Science, Media Technology",
+    "Human-Computer Interaction",
+    "Computer Science, Human-Computer Interaction, Media Technology",
+    "Human-Computer Interaction, Media Technology",
+    "Human-Computer Interaction, Media Technology, Graphic Design, Marketing",
+    "Business Administration, Finance, Law, Economics"
+  ])
+  .range([
+    "#8931ef",
+    "#ff00bd",
+    "#e11845",
+    "#f2ca19",
+    "#6e2c00",
+    "#f57f17",
+    "#1b4f72",
+    "#0057e9"
+  ])
+
+  /*
+    Name: Blue-Violet Hex: #8931ef
+    Name: Shocking Pink Hex: #ff00bd
+    Name: Spanish Crimson Hex: #e11845
+    Name: Jonquil (yellow) Hex: #f2ca19
+    #6e2c00 //brown
+    #f57f17 //orange
+    #1b4f72 //blue-black
+    Name: RYB Blue Hex: #0057e9
+    Name: Alien Armpit  Hex: #87e911   GREEN DO NOT USE
+  */
 
   //tooltip div
   var div = d3.select("body").append("div")	
@@ -39,25 +84,38 @@ var highlighted = null;
 
     
 // append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-.append("svg")
+let paracord = d3.select("#nice_viz") 
+  .append("svg")
+  .style("background-color", "#fefefa") //maybe a good idea??
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
-.append("g")
+  .append("g")
   .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
+// append another svg to bottom for pie chart
+let svg_sum = d3.select("#summary")
+  .append("svg")
+  .style("background-color", "#fefefa")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height - 200 + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+  // For each dimension, I build a linear scale. I store all in a y object
+  let y = {}
+  // Build the X scale -> it find the best position for each Y axis
+  x = d3.scalePoint()
+    .range([0, width])
 
 
-// For each dimension, I build a linear scale. I store all in a y object
-var y = {}
-// Build the X scale -> it find the best position for each Y axis
-x = d3.scalePoint()
-  .range([0, width])
-
-
-// Parse the Data
-d3.csv("student_data.csv", function(data) {
+// Parse the data from csv file. total 44 students
+// column 11 -22 (starts with 0)
+//d3.csv("student_data.csv").then(data => {
+d3.csv("student_data.csv", (error, data) => {
+  if (error) throw error;
+  console.log(data)
 
   const column_list = []
   /* get skills from data col 11 to 22 */
@@ -71,46 +129,31 @@ d3.csv("student_data.csv", function(data) {
         .range([height, 0]));
   }));
 
-  // Color scale
-  //TODO: mixed majors are added + mixed majors are not filtered
-  const color = d3.scaleOrdinal()
-  .domain([
-    "Media Technology",
-    "Computer Science",
-    "Computer Science, Media Technology",
-    "Human-Computer Interaction",
-    "Computer Science, Human-Computer Interaction, Media Technology",
-    "Human-Computer Interaction, Media Technology",
-    "Human-Computer Interaction, Media Technology, Graphic Design, Marketing",
-    "Business Administration, Finance, Law, Economics"
-  ])
-  .range([
-    "#8931ef",
-    "#ff00bd",
-    "#e11845",
-    "#f2ca19",
-    "#6e2c00",
-    "#f57f17",
-    "#1b4f72",
-    "#0057e9"
-  ])
 
+  // Highlight the student that is hovered
+  let highlighthover = function(d) {
+    sel_alias = d.Alias
+    sel_major = d.Major
+    //console.log(sel_alias + " : " + sel_major + " : " + color(sel_major));
 
-  // Add lines for hover and highlight.
-  foreground = svg.append("g")
-    .attr("class", "foreground")
-   .selectAll("myPath")
-    .data(data)
-    .enter().append("path")
-    .attr("d", path)
-    .style("opacity", "0.3")
-    .style("stroke", function(d){ return( color(d.Major))})
-    // .style("stroke", "lightgrey")
-    .on("mouseover", function(d) {
-      d3.select(this).attr("d", path)
+    // first every group turns grey
+    d3.selectAll(".line")
+      .transition().duration(200)
+      .style("stroke", "lightgrey")
+      .style("opacity", "0.2")
+
+    // Second the hovered alias gets color back
+    //let a= d3.selectAll("." + sel_major)
+    let a = d3.select("#" + sel_alias);
+    // console.log(a);
+    a.transition().duration(200)
+      .style("stroke", color(d.Major))
+      .style("opacity", "0.5")
+
+    //this info could be displayed
+    d3.select(this).attr("d", path)
         if (highlighted==null){
-          d3.select(this).attr("d", path).style("stroke-width", "9px").style("opacity", "0.8")
-          .style("stroke", function(d){ return( color(d.Major))} )
+          // d3.select(this).attr("d", path).style("stroke-width", "8px")
         }
         div.transition()		
           .duration(200)		
@@ -118,24 +161,51 @@ d3.csv("student_data.csv", function(data) {
         div.html(d.Alias + "<br/>"  + d.Major)	
           .style("left", (d3.event.pageX) + "px")		
           .style("top", (d3.event.pageY - 28) + "px");	
-  })					
-    .on("mouseout", function(d) {	
-        if (highlighted==null){
-          d3.select(this).attr("d", path).style("stroke-width", "3px")
-          .style("opacity", "0.3")	
-          .style("stroke", function(d){ return( color(d.Major))})
-          // .style("stroke", "lightgrey")
-        }
-        div.transition()		
-          .duration(500)		
-          .style("opacity", 0);	
+  }
+
+
+  // Unhighlight
+  let doNotHighlighthover = function(d) {
+    d3.selectAll(".line")
+    .transition().duration(50)
+    .delay(500)
+    .style("stroke", function(d) {
+      return (color(d.Major))
     })
+    .style("stroke-width", "4px")
+    // .style("opacity", "0.3")	
+
+      if (highlighted==null){
+        d3.select(this).attr("d", path).style("stroke-width", "4px")
+        .style("opacity", "0.3")	
+      }
+      div.transition()		
+        .duration(500)		
+        .style("opacity", 0);	
+  }
+
+
+  // Add lines for hover and highlight.
+  foreground = paracord.append("g")
+    .attr("class", "foreground")
+   .selectAll("myPath")
+    .data(data)
+    .enter().append("path")
+    .attr("id", d => d.Alias)
+    // 2 classes for each line: 'line' and the group name
+    .attr("class", d => "line " + d.Major)
+    .attr("d", path)
+    .style("fill", "none")
+    .style("stroke", d => color(d.Major))
+    .style("opacity", "0.3")
+    .on("mouseover", highlighthover)					
+    .on("mouseout", doNotHighlighthover)
     .on("click", highlight);
 
 
 
   // Draw the axis:
-  g= svg.selectAll(".dimension")
+  g= paracord.selectAll(".dimension")
     // For each dimension of the dataset I add a 'g' element:
     .data(dimensions).enter()
     .append("g")
@@ -186,7 +256,7 @@ d3.csv("student_data.csv", function(data) {
     
   //lowlight function
   function lowlight() {
-    highlighted.style("stroke-width", "3px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.3");
+    highlighted.style("stroke-width", "px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.3");
     highlighted=null;
     d3.select("body").selectAll("h2").style("display", "none");
     d3.select("body").selectAll("p.Alias")
@@ -238,7 +308,7 @@ function brushstart() {
 function brush() {
   // Get a set of dimensions with active brushes and their current extent.
   var actives = [];
-  svg.selectAll(".brush")
+  paracord.selectAll(".brush")
       .filter(function (d) {
           // console.log(d3.brushSelection(this));
           return d3.brushSelection(this);
@@ -261,41 +331,12 @@ function brush() {
 
     }}
 
-
-// simple data table
-function data_table(sample) {
-  // sort by first column
-  var sample = sample.sort(function(a,b) {
-    var col = d3.keys(a)[0];
-    return a[col] < b[col] ? -1 : 1;
-  });
+    
 
 
-  var table = d3.select("#food-list")
-    .html("")
-    .selectAll(".row")
-      .data(sample)
-    .enter().append("div")
-      .on("mouseover", highlight)
-      .on("mouseout", unhighlight)
-      .on("click", expectations)
-      ;
 
-  table
-    .append("span")
-      .attr("class", "color-block")
-      .style("background", function(d) { return color(d.Major,0.85) })
-table
-    .append("span")
-      .text(function(d) { return d.Alias; })
-}
+
+
+
+
   
-
-function expectations(d) {
-  var span = d3.select("#expectations")
-  span.select("span").remove();
-  span
-    .append("span")
-    .text(d.Expectations)
-  console.log(d.Expectations)
-}

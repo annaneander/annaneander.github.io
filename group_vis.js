@@ -1,4 +1,4 @@
-<!-- Code from d3-graph-gallery.com -->
+//<!-- Code from d3-graph-gallery.com -->
 
 // set dimensions and margins of the graph
 //TODO: sort out sizes according to viewport

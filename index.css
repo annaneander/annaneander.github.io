@@ -21,31 +21,11 @@ div.tooltip {
 .foreground path {
     fill: none;
     /* stroke: rgb(194, 194, 194); */
-    stroke-width: 4px;
+    stroke-width: 2px;
   }
 
 .brush .selection {
     fill-opacity: .3;
     stroke: rgb(44, 44, 44);
     shape-rendering: crispEdges;
-}
-
-
-h2{
-    margin-left: 55%;
-    display: inline;
-    /* text-align: end; */
-}
-
-p{
-    /* display: flex; */
-    margin-left: auto;
-    margin-right: 50px;
-    /* justify-content: flex-end; */
-
-    padding: 15px;  
-    border-radius: 8px;  
-    background: rgb(238, 238, 238);
-    width: 40%;
-
 }

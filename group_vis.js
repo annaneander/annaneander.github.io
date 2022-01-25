@@ -12,7 +12,6 @@ const margin = {
   width = 1300 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
-highlighted = null;
 
 /*
   8 majors, 8 colors. Red, blue and yellow. Avoid green for color blindness. TODO predefine colors as a list/dict.
@@ -57,28 +56,6 @@ const color = d3.scaleOrdinal()
   var div = d3.select("body").append("div")
       .attr("class", "tooltip")
       .style("opacity", 0);
-
-  //Detail
-  d3.select("body").append("h2")
-    .text("Alias")
-    .style("display", "none");
-  var alias = d3.select("body").append("p")
-    .attr("class", "Alias")
-    .style("display", "none");
-
-  // d3.select("body").append("h2")
-  //   .text("Interests")
-  //   .style("display", "none");
-  // var interests = d3.select("body").append("p")
-  //   .attr("class", "Interests")
-  //   .style("display", "none");
-
-  d3.select("body").append("h2")
-    .text("Expectations")
-    .style("display", "none");
-  var expectations = d3.select("body").append("p")
-    .attr("class", "Expectations")
-    .style("display", "none");
 
 
 // append the svg object to the body of the page
@@ -139,23 +116,24 @@ d3.csv("student_data.csv", (error, data) => {
 
     // first every group turns grey
     d3.selectAll(".line")
-      .transition().duration(200)
+      .transition()
+      .duration(200)
       .style("stroke", "lightgrey")
+      .style("stroke-width", "2px")
       .style("opacity", "0.2")
 
     // Second the hovered alias gets color back
     //let a= d3.selectAll("." + sel_major)
     let a = d3.select("#" + sel_alias);
     // console.log(a);
-    a.transition().duration(200)
+    a.transition()
+    .duration(200)
       .style("stroke", color(d.Major))
-      .style("opacity", "0.5")
+      .style("opacity", "0.9")
+      .style("stroke-width","6px")
 
     //this info could be displayed
     d3.select(this).attr("d", path)
-        if (highlighted==null){
-          // d3.select(this).attr("d", path).style("stroke-width", "8px")
-        }
         div.transition()
           .duration(200)
           .style("opacity", .9);
@@ -168,18 +146,15 @@ d3.csv("student_data.csv", (error, data) => {
   // Unhighlight
   let doNotHighlighthover = function(d) {
     d3.selectAll(".line")
-    .transition().duration(50)
+    .transition()
+    .duration(500)
     .delay(500)
     .style("stroke", function(d) {
       return (color(d.Major))
     })
-    .style("stroke-width", "4px")
-    // .style("opacity", "0.3")
+    .style("stroke-width", "2px")
+    .style("opacity", "0.3")
 
-      if (highlighted==null){
-        d3.select(this).attr("d", path).style("stroke-width", "4px")
-        .style("opacity", "0.3")
-      }
       div.transition()
         .duration(500)
         .style("opacity", 0);
@@ -201,7 +176,6 @@ d3.csv("student_data.csv", (error, data) => {
     .style("opacity", "0.3")
     .on("mouseover", highlighthover)
     .on("mouseout", doNotHighlighthover)
-    .on("click", highlight);
 
 
 
@@ -238,58 +212,6 @@ d3.csv("student_data.csv", (error, data) => {
     .selectAll("rect")
     .attr("x", -8)
     .attr("width", 16);
-
-  /*--------function define--------*/
-
-  //  onclick
-  function equalToEventTarget() {
-    return this == d3.event.target;
-  }
-
-  d3.select("body").on("click", function(){
-    var outside = d3.selectAll("path").filter(equalToEventTarget).empty();
-    if (outside && highlighted!=null){
-      lowlight();
-    }
-
-  });
-
-
-  //lowlight function
-  function lowlight() {
-    highlighted.style("stroke-width", "px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.3");
-    highlighted=null;
-    d3.select("body").selectAll("h2").style("display", "none");
-    d3.select("body").selectAll("p.Alias")
-    .text("")
-    .style("display", "none");
-    // d3.select("body").selectAll("p.Interests")
-    // 		.text("")
-    // 		.style("display", "none");
-    	d3.select("body").selectAll("p.Expectations")
-    		.text("")
-    		.style("display", "none");
-
-  }
-
-  //highlight function
-  function highlight(d) {
-    if (highlighted!=null){
-      lowlight();
-    }
-    d3.select(this).attr("d", path).style("stroke-width", "12px").style("opacity", "1");
-    highlighted=d3.select(this).attr("d", path).style("stroke", function(d){ return( color(d.Major))} );
-    d3.select("body").selectAll("h2").style("display", "block");
-    d3.select("body").selectAll("p.Alias")
-    	.text(d.Alias)
-    	.style("display", "block");
-    // d3.select("body").selectAll("p.Interests")
-    // 	.text(d.Interests)
-    // 	.style("display", "block");
-    d3.select("body").selectAll("p.Expectations")
-    	.text(d.Expectations)
-    	.style("display", "block");
-  }
 
 })
 

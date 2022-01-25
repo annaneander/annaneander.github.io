@@ -1,3 +1,4 @@
+
 //<!-- Code from d3-graph-gallery.com -->
 
 // set dimensions and margins of the graph
@@ -15,6 +16,8 @@ const margin = {
   8 majors, 8 colors. Red, blue and yellow. Avoid green for color blindness. TODO predefine colors as a list/dict.
 */
 const color = d3.scaleOrdinal()
+
+
   .domain([
     "Media Technology",
     "Computer Science",
@@ -36,28 +39,56 @@ const color = d3.scaleOrdinal()
     "#0057e9"
   ])
 
-/*
-Name: Blue-Violet Hex: #8931ef
-Name: Shocking Pink Hex: #ff00bd
-Name: Spanish Crimson Hex: #e11845
-Name: Jonquil (yellow) Hex: #f2ca19
-#6e2c00 //brown
-#f57f17 //orange
-#1b4f72 //blue-black
-Name: RYB Blue Hex: #0057e9
-Name: Alien Armpit  Hex: #87e911   GREEN DO NOT USE
-*/
+  /*
+    Name: Blue-Violet Hex: #8931ef
+    Name: Shocking Pink Hex: #ff00bd
+    Name: Spanish Crimson Hex: #e11845
+    Name: Jonquil (yellow) Hex: #f2ca19
+    #6e2c00 //brown
+    #f57f17 //orange
+    #1b4f72 //blue-black
+    Name: RYB Blue Hex: #0057e9
+    Name: Alien Armpit  Hex: #87e911   GREEN DO NOT USE
+  */
 
+  //tooltip div
+  var div = d3.select("body").append("div")	
+      .attr("class", "tooltip")				
+      .style("opacity", 0);
 
-// append the paracord svg to the body of the page
-let paracord = d3.select("#nice_viz")
+  //Detail
+  d3.select("body").append("h2")	
+    .text("Alias")
+    .style("display", "none");
+  var alias = d3.select("body").append("p")	
+    .attr("class", "Alias")
+    .style("display", "none");
+
+  // d3.select("body").append("h2")	
+  //   .text("Interests")
+  //   .style("display", "none");
+  // var interests = d3.select("body").append("p")	
+  //   .attr("class", "Interests")
+  //   .style("display", "none");
+
+  d3.select("body").append("h2")	
+    .text("Expectations")
+    .style("display", "none");
+  var expectations = d3.select("body").append("p")		
+    .attr("class", "Expectations")
+    .style("display", "none");
+
+    
+// append the svg object to the body of the page
+let paracord = d3.select("#nice_viz") 
   .append("svg")
   .style("background-color", "#fefefa") //maybe a good idea??
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
   .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")");
+
+        "translate(" + margin.left + "," + margin.top + ")");
 
 
 // append another svg to bottom for pie chart
@@ -71,122 +102,235 @@ let svg_sum = d3.select("#summary")
     "translate(" + margin.left + "," + margin.top + ")");
 
 
+  // For each dimension, I build a linear scale. I store all in a y object
+  let y = {}
+  // Build the X scale -> it find the best position for each Y axis
+  x = d3.scalePoint()
+    .range([0, width])
+
+
 // Parse the data from csv file. total 44 students
 // column 11 -22 (starts with 0)
-
 //d3.csv("student_data.csv").then(data => {
-  d3.csv("student_data.csv", (error, data) => {
-    if (error) throw error;
-    console.log(data)
+d3.csv("student_data.csv", (error, data) => {
+  if (error) throw error;
+  console.log(data)
 
-    const dimensions = []
-    /* get skills from data col 11 to 22 */
-    for (let i = 0; i <= 11; i++) {
-      dimensions[i] = data.columns[i + 11]
-    }
+  const column_list = []
+  /* get skills from data col 11 to 22 */
+  for (let i = 0; i <= 11; i++) {
+  column_list[i] = data.columns[i + 11]
+}
 
-    // For each dimension, a linear scale. Stored in a y object
-    let y = {}
-    for (i in dimensions) {
-      skill = dimensions[i]
-      y[skill] = d3.scaleLinear()
-        .domain([1, 10]) // --> Same axis range for each group
-        // --> different axis range for each group --> .domain( [d3.extent(data, function(d) { return +d[name]; })] )
-        .range([height, 0])
-    }
-
-    // Build the X scale -> let it find the best position for each Y axis
-    x = d3.scalePoint()
-      .range([0, width])
-      .domain(dimensions);
-
-    // Highlight the student that is hovered
-    let highlight = function(d) {
-      sel_alias = d.Alias
-      sel_major = d.Major
-      //console.log(sel_alias + " : " + sel_major + " : " + color(sel_major));
-
-      // first every group turns grey
-      d3.selectAll(".line")
-        .transition().duration(200)
-        .style("stroke", "lightgrey")
-        .style("opacity", "0.2")
-
-      // Second the hovered alias gets color back
-      //let a= d3.selectAll("." + sel_major)
-      let a = d3.select("#" + sel_alias);
-      console.log(a);
-      a.transition().duration(200)
-        .style("stroke", color(d.Major))
-        .style("opacity", "0.5")
-      //this info could be displayed
-    }
+  x.domain(dimensions = d3.keys(data[0]).filter(function(d) {
+    return column_list.indexOf(d) >= 0 && (y[d] = d3.scaleLinear()
+        .domain([0,10])
+        .range([height, 0]));
+  }));
 
 
-    // Unhighlight
-    let doNotHighlight = function(d) {
-      d3.selectAll(".line")
-        .transition().duration(200).delay(1000)
-        .style("stroke", function(d) {
-          return (color(d.Major))
-        })
-        .style("opacity", "0.5")
-    }
+  // Highlight the student that is hovered
+  let highlighthover = function(d) {
+    sel_alias = d.Alias
+    sel_major = d.Major
+    //console.log(sel_alias + " : " + sel_major + " : " + color(sel_major));
 
-    // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
-    function path(d) {
-      return d3.line()(dimensions.map(function(p) {
-        return [x(p), y[p](d[p])];
-      }));
-    }
+    // first every group turns grey
+    d3.selectAll(".line")
+      .transition().duration(200)
+      .style("stroke", "lightgrey")
+      .style("opacity", "0.2")
 
-    function clicked() {
-      console.log("click")
-    }
-
-    // Draw the lines
-    paracord
-      .selectAll("myPath")
-      .data(data)
-      .enter()
-      .append("path")
-      .attr("id", d => d.Alias)
-      // 2 classes for each line: 'line' and the group name
-      .attr("class", d => "line " + d.Major)
-      .attr("d", path)
-      .style("fill", "none")
-      .style("stroke", d => color(d.Major))
+    // Second the hovered alias gets color back
+    //let a= d3.selectAll("." + sel_major)
+    let a = d3.select("#" + sel_alias);
+    // console.log(a);
+    a.transition().duration(200)
+      .style("stroke", color(d.Major))
       .style("opacity", "0.5")
-      .on("mouseover", highlight)
-      .on("mouseleave", doNotHighlight)
-      .on("click", clicked)
+
+    //this info could be displayed
+    d3.select(this).attr("d", path)
+        if (highlighted==null){
+          // d3.select(this).attr("d", path).style("stroke-width", "8px")
+        }
+        div.transition()		
+          .duration(200)		
+          .style("opacity", .9);		
+        div.html(d.Alias + "<br/>"  + d.Major)	
+          .style("left", (d3.event.pageX) + "px")		
+          .style("top", (d3.event.pageY - 28) + "px");	
+  }
 
 
-    // Draw the axis:
-    paracord.selectAll("myAxis")
-      // For each dimension of the dataset I add a 'g' element:
-      .data(dimensions).enter()
-      .append("g")
-      .attr("class", "axis")
-      // translate this element to its right position on the x axis
-      .attr("transform", function(d) {
-        return "translate(" + x(d) + ")";
-      })
-      // And I build the axis with the call function
-      .each(function(d) {
-        d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d]));
-      })
-      // Add axis title
-      .append("text")
+  // Unhighlight
+  let doNotHighlighthover = function(d) {
+    d3.selectAll(".line")
+    .transition().duration(50)
+    .delay(500)
+    .style("stroke", function(d) {
+      return (color(d.Major))
+    })
+    .style("stroke-width", "4px")
+    // .style("opacity", "0.3")	
+
+      if (highlighted==null){
+        d3.select(this).attr("d", path).style("stroke-width", "4px")
+        .style("opacity", "0.3")	
+      }
+      div.transition()		
+        .duration(500)		
+        .style("opacity", 0);	
+  }
+
+
+  // Add lines for hover and highlight.
+  foreground = paracord.append("g")
+    .attr("class", "foreground")
+   .selectAll("myPath")
+    .data(data)
+    .enter().append("path")
+    .attr("id", d => d.Alias)
+    // 2 classes for each line: 'line' and the group name
+    .attr("class", d => "line " + d.Major)
+    .attr("d", path)
+    .style("fill", "none")
+    .style("stroke", d => color(d.Major))
+    .style("opacity", "0.3")
+    .on("mouseover", highlighthover)					
+    .on("mouseout", doNotHighlighthover)
+    .on("click", highlight);
+
+
+
+  // Draw the axis:
+  g= paracord.selectAll(".dimension")
+    // For each dimension of the dataset I add a 'g' element:
+    .data(dimensions).enter()
+    .append("g")
+    .attr("class", "axis")
+    // I translate this element to its right position on the x axis
+    .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+
+    // And I build the axis with the call function
+    g.append("g")
+    .each(function(d) { d3.select(this).call(d3.axisLeft().ticks(10).scale(y[d])); })
+    // Add axis title
+    .append("text")
       .style("text-anchor", "middle")
       .attr("y", -9)
-      .text(function(d) {
-        return d;
+      .text(function(d) { return d; })
+      .style("fill", "black");
+
+ 
+  //Apply the brush filter function
+  g.append("g")
+    .attr("class", "brush")
+    .each(function (d) {
+        d3.select(this).call(y[d].brush = d3.brushY()
+            .extent([[-10, 0], [10, height]])
+            .on("start", brushstart)
+            .on("brush", brush)
+            .on("end", brush));
+    })
+    .selectAll("rect")
+    .attr("x", -8)
+    .attr("width", 16);
+
+  /*--------function define--------*/
+
+  //  onclick
+  function equalToEventTarget() {
+    return this == d3.event.target;
+  }
+  
+  d3.select("body").on("click", function(){
+    var outside = d3.selectAll("path").filter(equalToEventTarget).empty();
+    if (outside && highlighted!=null){
+      lowlight();
+    }
+  
+  });
+    
+    
+  //lowlight function
+  function lowlight() {
+    highlighted.style("stroke-width", "px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.3");
+    highlighted=null;
+    d3.select("body").selectAll("h2").style("display", "none");
+    d3.select("body").selectAll("p.Alias")
+    .text("")
+    .style("display", "none");
+    // d3.select("body").selectAll("p.Interests")
+    // 		.text("")
+    // 		.style("display", "none");
+    	d3.select("body").selectAll("p.Expectations")
+    		.text("")
+    		.style("display", "none");
+  
+  }
+
+  //highlight function
+  function highlight(d) {
+    if (highlighted!=null){
+      lowlight();
+    }
+    d3.select(this).attr("d", path).style("stroke-width", "12px").style("opacity", "1");
+    highlighted=d3.select(this).attr("d", path).style("stroke", function(d){ return( color(d.Major))} );
+    d3.select("body").selectAll("h2").style("display", "block");
+    d3.select("body").selectAll("p.Alias")
+    	.text(d.Alias)
+    	.style("display", "block");
+    // d3.select("body").selectAll("p.Interests")
+    // 	.text(d.Interests)
+    // 	.style("display", "block");
+    d3.select("body").selectAll("p.Expectations")
+    	.text(d.Expectations)
+    	.style("display", "block");
+  }
+
+})
+
+
+/*--------function define--------*/
+
+// The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
+  function path(d) {
+    return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+}
+
+//brush function allows to filter out the lines in certain range
+function brushstart() {
+  d3.event.sourceEvent.stopPropagation();
+}
+
+function brush() {
+  // Get a set of dimensions with active brushes and their current extent.
+  var actives = [];
+  paracord.selectAll(".brush")
+      .filter(function (d) {
+          // console.log(d3.brushSelection(this));
+          return d3.brushSelection(this);
       })
-      .style("fill", "black")
+      .each(function (key) {
+          actives.push({
+              dimension: key,
+              extent: d3.brushSelection(this)
+          });
+      });
+  // Change line visibility based on brush extent.
+  if (actives.length === 0) {
+      foreground.style("display", null);
+  } else {
+      foreground.style("display", function (d) {
+          return actives.every(function (brushObj) {
+              return brushObj.extent[0] <= y[brushObj.dimension](d[brushObj.dimension]) && y[brushObj.dimension](d[brushObj.dimension]) <= brushObj.extent[1];
+          }) ? null : "none";
+      });
 
-    //svg_sum.()
-  })
+    }}
 
-//  .catch(error =>
-  //  console.log("Error : " + error))
+    
+
+
+

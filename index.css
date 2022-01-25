@@ -5,23 +5,23 @@ h1{
     font-weight:bolder;
 }
 
-div.tooltip {
+div.tooltip { 
     position: absolute;
-    margin-top: 50px ;
-    text-align: center;
-    width: 160px;
-    padding: 2px;
-    font: 14px sans-serif;
-    background: rgb(243, 243, 243);
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
-}
+    margin-top: 50px ;     
+    text-align: center;     
+    width: 160px;                  
+    padding: 2px;       
+    font: 14px sans-serif;    
+    background: rgb(243, 243, 243); 
+    border: 0px;    
+    border-radius: 8px;     
+    pointer-events: none;   
+
 
 .foreground path {
     fill: none;
     /* stroke: rgb(194, 194, 194); */
-    stroke-width: 3px;
+    stroke-width: 4px;
   }
 
 .brush .selection {
@@ -37,14 +37,14 @@ h2{
     /* text-align: end; */
 }
 
-
 p{
     /* display: flex; */
     margin-left: auto;
     margin-right: 50px;
     /* justify-content: flex-end; */
-    padding: 15px;
-    border-radius: 8px;
+
+    padding: 15px;  
+    border-radius: 8px;  
     background: rgb(238, 238, 238);
     width: 40%;
 

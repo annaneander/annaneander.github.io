@@ -12,6 +12,8 @@ const margin = {
   width = 1300 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
+highlighted = null;
+
 /*
   8 majors, 8 colors. Red, blue and yellow. Avoid green for color blindness. TODO predefine colors as a list/dict.
 */
@@ -52,35 +54,35 @@ const color = d3.scaleOrdinal()
   */
 
   //tooltip div
-  var div = d3.select("body").append("div")	
-      .attr("class", "tooltip")				
+  var div = d3.select("body").append("div")
+      .attr("class", "tooltip")
       .style("opacity", 0);
 
   //Detail
-  d3.select("body").append("h2")	
+  d3.select("body").append("h2")
     .text("Alias")
     .style("display", "none");
-  var alias = d3.select("body").append("p")	
+  var alias = d3.select("body").append("p")
     .attr("class", "Alias")
     .style("display", "none");
 
-  // d3.select("body").append("h2")	
+  // d3.select("body").append("h2")
   //   .text("Interests")
   //   .style("display", "none");
-  // var interests = d3.select("body").append("p")	
+  // var interests = d3.select("body").append("p")
   //   .attr("class", "Interests")
   //   .style("display", "none");
 
-  d3.select("body").append("h2")	
+  d3.select("body").append("h2")
     .text("Expectations")
     .style("display", "none");
-  var expectations = d3.select("body").append("p")		
+  var expectations = d3.select("body").append("p")
     .attr("class", "Expectations")
     .style("display", "none");
 
-    
+
 // append the svg object to the body of the page
-let paracord = d3.select("#nice_viz") 
+let paracord = d3.select("#nice_viz")
   .append("svg")
   .style("background-color", "#fefefa") //maybe a good idea??
   .attr("width", width + margin.left + margin.right)
@@ -154,12 +156,12 @@ d3.csv("student_data.csv", (error, data) => {
         if (highlighted==null){
           // d3.select(this).attr("d", path).style("stroke-width", "8px")
         }
-        div.transition()		
-          .duration(200)		
-          .style("opacity", .9);		
-        div.html(d.Alias + "<br/>"  + d.Major)	
-          .style("left", (d3.event.pageX) + "px")		
-          .style("top", (d3.event.pageY - 28) + "px");	
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        div.html(d.Alias + "<br/>"  + d.Major)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
   }
 
 
@@ -172,15 +174,15 @@ d3.csv("student_data.csv", (error, data) => {
       return (color(d.Major))
     })
     .style("stroke-width", "4px")
-    // .style("opacity", "0.3")	
+    // .style("opacity", "0.3")
 
       if (highlighted==null){
         d3.select(this).attr("d", path).style("stroke-width", "4px")
-        .style("opacity", "0.3")	
+        .style("opacity", "0.3")
       }
-      div.transition()		
-        .duration(500)		
-        .style("opacity", 0);	
+      div.transition()
+        .duration(500)
+        .style("opacity", 0);
   }
 
 
@@ -197,7 +199,7 @@ d3.csv("student_data.csv", (error, data) => {
     .style("fill", "none")
     .style("stroke", d => color(d.Major))
     .style("opacity", "0.3")
-    .on("mouseover", highlighthover)					
+    .on("mouseover", highlighthover)
     .on("mouseout", doNotHighlighthover)
     .on("click", highlight);
 
@@ -222,7 +224,7 @@ d3.csv("student_data.csv", (error, data) => {
       .text(function(d) { return d; })
       .style("fill", "black");
 
- 
+
   //Apply the brush filter function
   g.append("g")
     .attr("class", "brush")
@@ -243,16 +245,16 @@ d3.csv("student_data.csv", (error, data) => {
   function equalToEventTarget() {
     return this == d3.event.target;
   }
-  
+
   d3.select("body").on("click", function(){
     var outside = d3.selectAll("path").filter(equalToEventTarget).empty();
     if (outside && highlighted!=null){
       lowlight();
     }
-  
+
   });
-    
-    
+
+
   //lowlight function
   function lowlight() {
     highlighted.style("stroke-width", "px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.3");
@@ -267,7 +269,7 @@ d3.csv("student_data.csv", (error, data) => {
     	d3.select("body").selectAll("p.Expectations")
     		.text("")
     		.style("display", "none");
-  
+
   }
 
   //highlight function
@@ -329,8 +331,3 @@ function brush() {
       });
 
     }}
-
-    
-
-
-

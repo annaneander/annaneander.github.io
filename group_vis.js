@@ -1,27 +1,23 @@
-// Code from d3-graph-gallery.com
+
+//<!-- Code from d3-graph-gallery.com -->
 
 // set dimensions and margins of the graph
 //TODO: sort out sizes according to viewport
-let margin = {
-  top: 40, 
-  right: 60, 
-  bottom: 10, 
-  left: 90},
-  width = 1400 - margin.left - margin.right,
+const margin = {
+    top: 40,
+    right: 70,
+    bottom: 10,
+    left: 70
+  },
+  width = 1300 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
-
-//Define variables
-var lines;
-var dimensions;
-var highlighted = null; 
-
-  // Color scale
-  /*
+/*
   8 majors, 8 colors. Red, blue and yellow. Avoid green for color blindness. TODO predefine colors as a list/dict.
-  */
-  //TODO: mixed majors are added + mixed majors are not filtered
-  const color = d3.scaleOrdinal()
+*/
+const color = d3.scaleOrdinal()
+
+
   .domain([
     "Media Technology",
     "Computer Science",
@@ -91,7 +87,9 @@ let paracord = d3.select("#nice_viz")
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
   .attr("transform",
+
         "translate(" + margin.left + "," + margin.top + ")");
+
 
 // append another svg to bottom for pie chart
 let svg_sum = d3.select("#summary")
@@ -102,6 +100,7 @@ let svg_sum = d3.select("#summary")
   .append("g")
   .attr("transform",
     "translate(" + margin.left + "," + margin.top + ")");
+
 
   // For each dimension, I build a linear scale. I store all in a y object
   let y = {}
@@ -335,8 +334,3 @@ function brush() {
 
 
 
-
-
-
-
-  

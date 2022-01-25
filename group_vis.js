@@ -75,7 +75,7 @@ let svg_sum = d3.select("#summary")
 // column 11 -22 (starts with 0)
 
 //d3.csv("student_data.csv").then(data => {
-  d3.csv("test_data.csv", (error, data) => {
+  d3.csv("student_data.csv", (error, data) => {
     if (error) throw error;
     console.log(data)
 

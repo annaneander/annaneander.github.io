@@ -1,19 +1,41 @@
 // set the dimensions and margins of the graph
 //TODO: sort out left margin of graph
-let margin = {top: 40, right: 70, bottom: 10, left: 70},
-  width = 1260 - margin.left - margin.right,
+let margin = {top: 40, right: 60, bottom: 10, left: 90},
+  width = 1400 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
-var background,
-    foreground;
 
+//Define variables
+var lines;
 var dimensions;
-
 var highlighted = null; 
 
-var div = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
-    .style("opacity", 0);
+  //tooltip div
+  var div = d3.select("body").append("div")	
+      .attr("class", "tooltip")				
+      .style("opacity", 0);
+
+  //Detail
+  d3.select("body").append("h2")	
+    .text("Alias")
+    .style("display", "none");
+  var alias = d3.select("body").append("p")	
+    .attr("class", "Alias")
+    .style("display", "none");
+
+  // d3.select("body").append("h2")	
+  //   .text("Interests")
+  //   .style("display", "none");
+  // var interests = d3.select("body").append("p")	
+  //   .attr("class", "Interests")
+  //   .style("display", "none");
+
+  d3.select("body").append("h2")	
+    .text("Expectations")
+    .style("display", "none");
+  var expectations = d3.select("body").append("p")		
+    .attr("class", "Expectations")
+    .style("display", "none");
 
     
 // append the svg object to the body of the page
@@ -26,22 +48,6 @@ var svg = d3.select("#my_dataviz")
         "translate(" + margin.left + "," + margin.top + ")");
 
 
-// Here I set the list of dimension manually to control the order of axis:
-//   dimensions =
-//   ["Information Visualization",
-//   "Statistics",
-//   "Mathematics",
-//   "Drawing and Art",
-//   "Computer Usage",
-//   "Programming",
-//   "Graphics Programming",
-//   "HCI",
-//   "UX",
-//   "Communication",
-//   "Collaboration",
-//   "Code Repository",
-//  ]
-
 
 // For each dimension, I build a linear scale. I store all in a y object
 var y = {}
@@ -51,83 +57,53 @@ x = d3.scalePoint()
 
 
 // Parse the Data
-d3.csv("new_data.csv", function(data) {
+d3.csv("student_data.csv", function(data) {
 
-  // for (i in dimensions) {
-  //   name = dimensions[i]
-  //   y[name] = d3.scaleLinear()
-  //     .domain( [0,10] ) // --> Same axis range for each group
-  //     // --> different axis range for each group --> .domain( [d3.extent(data, function(d) { return +d[name]; })] )
-  //     .range([height, 0])
-  // }
+  const column_list = []
+  /* get skills from data col 11 to 22 */
+  for (let i = 0; i <= 11; i++) {
+  column_list[i] = data.columns[i + 11]
+}
 
   x.domain(dimensions = d3.keys(data[0]).filter(function(d) {
-  	var column_list = 
-        ["Information Visualization",
-              "Statistics",
-              "Mathematics",
-              "Drawing and Art",
-              "Computer Usage",
-              "Programming",
-              "Graphics Programming",
-              "HCI",
-              "UX",
-              "Communication",
-              "Collaboration",
-              "Code Repository",
-            ];
     return column_list.indexOf(d) >= 0 && (y[d] = d3.scaleLinear()
         .domain([0,10])
         .range([height, 0]));
-
   }));
 
-  // Color scale: give me a specie name, I return a color
-  //TODO: not all mixed majors are added + mixed majors are not filtered
-  // //just random colors for now
-  let color = d3.scaleOrdinal()
-    .domain(["Media Technology", "Computer Science", "Human-Computer Interaction", "Computer Engineering", "Finance" ])
-    .range([ "#440154ff", "#21908dff", "#fde725ff","#21908000","#ddd08dff" ])
+  // Color scale
+  //TODO: mixed majors are added + mixed majors are not filtered
+  const color = d3.scaleOrdinal()
+  .domain([
+    "Media Technology",
+    "Computer Science",
+    "Computer Science, Media Technology",
+    "Human-Computer Interaction",
+    "Computer Science, Human-Computer Interaction, Media Technology",
+    "Human-Computer Interaction, Media Technology",
+    "Human-Computer Interaction, Media Technology, Graphic Design, Marketing",
+    "Business Administration, Finance, Law, Economics"
+  ])
+  .range([
+    "#8931ef",
+    "#ff00bd",
+    "#e11845",
+    "#f2ca19",
+    "#6e2c00",
+    "#f57f17",
+    "#1b4f72",
+    "#0057e9"
+  ])
 
 
-  // // Highlight the Major that is hovered
-  // var highlight = function(d){
-
-  //   selected_specie = d.Major
-
-  //   // first every group turns grey
-  //   d3.selectAll(".line")
-  //     .transition().duration(200)
-  //     .style("stroke", "lightgrey")
-  //     .style("opacity", "0.2")
-  //   // Second the hovered specie takes its color
-
-  //   //This does not seem to work
-  //   d3.selectAll("." + selected_specie)
-  //     .transition().duration(200)
-  //     .style("stroke", color(selected_specie))
-  //     .style("opacity", "1")
-  //     //this info could be displayed
-  //     console.log(selected_specie +" : "+ color(selected_specie));
-
-  // }
-
-  // // Unhighlight
-  // var doNotHighlight = function(d){
-  //   d3.selectAll(".line")
-  //     .transition().duration(200).delay(1000)
-  //     .style("stroke", function(d){ return( color(d.Major))} )
-  //     .style("opacity", "1")
-  // }
-
-  // Add blue foreground lines for focus.
+  // Add lines for hover and highlight.
   foreground = svg.append("g")
     .attr("class", "foreground")
    .selectAll("myPath")
     .data(data)
     .enter().append("path")
     .attr("d", path)
-    .style("opacity", "0.2")
+    .style("opacity", "0.3")
     .style("stroke", function(d){ return( color(d.Major))})
     // .style("stroke", "lightgrey")
     .on("mouseover", function(d) {
@@ -146,7 +122,7 @@ d3.csv("new_data.csv", function(data) {
     .on("mouseout", function(d) {	
         if (highlighted==null){
           d3.select(this).attr("d", path).style("stroke-width", "3px")
-          .style("opacity", "0.2")	
+          .style("opacity", "0.3")	
           .style("stroke", function(d){ return( color(d.Major))})
           // .style("stroke", "lightgrey")
         }
@@ -169,7 +145,7 @@ d3.csv("new_data.csv", function(data) {
 
     // And I build the axis with the call function
     g.append("g")
-    .each(function(d) { d3.select(this).call(d3.axisLeft().ticks(5).scale(y[d])); })
+    .each(function(d) { d3.select(this).call(d3.axisLeft().ticks(10).scale(y[d])); })
     // Add axis title
     .append("text")
       .style("text-anchor", "middle")
@@ -178,8 +154,8 @@ d3.csv("new_data.csv", function(data) {
       .style("fill", "black");
 
  
-
-    g.append("g")
+  //Apply the brush filter function
+  g.append("g")
     .attr("class", "brush")
     .each(function (d) {
         d3.select(this).call(y[d].brush = d3.brushY()
@@ -192,60 +168,69 @@ d3.csv("new_data.csv", function(data) {
     .attr("x", -8)
     .attr("width", 16);
 
+  /*--------function define--------*/
 
-
-    function equalToEventTarget() {
-      return this == d3.event.target;
+  //  onclick
+  function equalToEventTarget() {
+    return this == d3.event.target;
+  }
+  
+  d3.select("body").on("click", function(){
+    var outside = d3.selectAll("path").filter(equalToEventTarget).empty();
+    if (outside && highlighted!=null){
+      lowlight();
     }
-    
-    d3.select("body").on("click", function(){
-      var outside = d3.selectAll("path").filter(equalToEventTarget).empty();
-      if (outside && highlighted!=null){
-        lowlight();
-      }
-    
-    });
+  
+  });
     
     
-    
-    function lowlight() {
-      highlighted.style("stroke-width", "3px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.2");
-      highlighted=null;
-      // d3.select("body").selectAll("h2").style("display", "none");
-      // d3.select("body").selectAll("p.interests")
-      // 		.text("")
-      // 		.style("display", "none");
-      // 	d3.select("body").selectAll("p.learn")
-      // 		.text("")
-      // 		.style("display", "none");
-    
-    }
+  //lowlight function
+  function lowlight() {
+    highlighted.style("stroke-width", "3px").style("stroke",function(d){ return( color(d.Major))}).style("opacity","0.3");
+    highlighted=null;
+    d3.select("body").selectAll("h2").style("display", "none");
+    d3.select("body").selectAll("p.Alias")
+    .text("")
+    .style("display", "none");
+    // d3.select("body").selectAll("p.Interests")
+    // 		.text("")
+    // 		.style("display", "none");
+    	d3.select("body").selectAll("p.Expectations")
+    		.text("")
+    		.style("display", "none");
+  
+  }
 
+  //highlight function
   function highlight(d) {
     if (highlighted!=null){
       lowlight();
     }
-    d3.select(this).attr("d", path).style("stroke-width", "13px").style("opacity", "1");
+    d3.select(this).attr("d", path).style("stroke-width", "12px").style("opacity", "1");
     highlighted=d3.select(this).attr("d", path).style("stroke", function(d){ return( color(d.Major))} );
-    // d3.select("body").selectAll("h2").style("display", "block");
-    // d3.select("body").selectAll("p.interests")
-    // 	.text(d.interests)
+    d3.select("body").selectAll("h2").style("display", "block");
+    d3.select("body").selectAll("p.Alias")
+    	.text(d.Alias)
+    	.style("display", "block");
+    // d3.select("body").selectAll("p.Interests")
+    // 	.text(d.Interests)
     // 	.style("display", "block");
-    // d3.select("body").selectAll("p.learn")
-    // 	.text(d.learn)
-    // 	.style("display", "block");
+    d3.select("body").selectAll("p.Expectations")
+    	.text(d.Expectations)
+    	.style("display", "block");
   }
 
 })
 
 
+/*--------function define--------*/
 
 // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
   function path(d) {
     return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
 }
 
-
+//brush function allows to filter out the lines in certain range
 function brushstart() {
   d3.event.sourceEvent.stopPropagation();
 }

@@ -119,10 +119,9 @@ let svg_sum = d3.select("#summary")
       a.transition().duration(200)
         .style("stroke", color(d.Major))
         .style("opacity", "0.5")
-
       //this info could be displayed
-
     }
+
 
     // Unhighlight
     let doNotHighlight = function(d) {

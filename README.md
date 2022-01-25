@@ -1,4 +1,4 @@
- ##Visualisation of student data for Assignment 1. IVIS - VT2022
+ ## Visualisation of student data for Assignment 1. IVIS - VT2022
 
 
 The visualisation shows an overview of all the students using parallel coordinates that sorts up all attributes simultaneously.

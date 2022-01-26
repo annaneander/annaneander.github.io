@@ -29,3 +29,34 @@ div.tooltip {
     stroke: rgb(44, 44, 44);
     shape-rendering: crispEdges;
 }
+
+#legend{
+    margin-left: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:bolder;
+}
+
+#a1{
+    background-color: #8931ef;
+}
+#a2{
+    background-color: #ff00bd;
+}
+#a3{
+    background-color: #e11845;
+}
+#a4{
+    background-color:#f2ca19 ;
+}
+#a5{
+    background-color: #6e2c00;
+}
+#a6{
+    background-color:#f57f17 ;
+}
+#a7{
+    background-color: #1b4f72;
+}
+#a8{
+    background-color: #0057e9;
+}
